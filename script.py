@@ -29,13 +29,14 @@ unchanged_lines = []
 
 # Process product categories
 for product_category in root.findall(".//product_category"):
-    original_text = product_category.text
-    modified_text = apply_replacements(original_text)
-    
-    if original_text != modified_text:
-        product_category.text = modified_text
-    else:
-        unchanged_lines.append(original_text)
+    for category in product_category.findall("category"):
+        original_text = category.text
+        modified_text = apply_replacements(original_text)
+        
+        if original_text != modified_text:
+            category.text = modified_text
+        else:
+            unchanged_lines.append(f"ID: {category.get('id')}, Text: {original_text}")
 
 # Save the modified XML file
 tree.write("modified_export.xml", encoding="utf-8", xml_declaration=True)
