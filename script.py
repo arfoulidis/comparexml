@@ -1,10 +1,9 @@
 import os
 import requests
 import xml.etree.ElementTree as ET
-import resend
 
-# Set your Resend API key
-resend.api_key = "re_KBfh7Xe6_CYET3ex5CRxjyPgB9tbqGKHj"
+# Set your Resend API key (if needed)
+# resend.api_key = "your_api_key"
 
 # Define replacements
 replacements = {
@@ -25,41 +24,20 @@ root = ET.fromstring(xml_data)
 unreplaced_categories = []
 
 # Iterate through the product categories
-for category in root.findall(".//category/text"):
-    category_name = category.strip()  # Remove leading/trailing whitespace
-    if category_name in replacements:
-        # Replace the category name with the corresponding replacement
-        category.getparent().text = replacements[category_name]
-    else:
-        unreplaced_categories.append(category_name)
+for product in root.findall(".//product"):
+    category_element = product.find(".//category/text()")
+    if category_element is not None:
+        category_name = category_element.strip()  # Remove leading/trailing whitespace
+        if category_name in replacements:
+            # Replace the category name with the corresponding replacement
+            category_element.getparent().text = replacements[category_name]
+        else:
+            unreplaced_categories.append(f"<product_category>{category_name}</product_category>")
 
-# Check if any categories were not replaced
+# Print the unreplaced categories
 if unreplaced_categories:
-    # Comment out the email sending part
-    # Prepare email content
-    # email_content = "<strong>These categories have not been replaced:</strong> <br> <p>"
-    # email_content += "<br>".join(unreplaced_categories)
-    # email_content += "</p>"
-
-    # Prepare email parameters
-    # params = {
-    #     "from": "resend@resendcom.a89.gr",
-    #     "to": ["ar.foulidis@gmail.com"],
-    #     "subject": "Unreplaced Categories in XML",
-    #     "html": email_content,
-    #     "headers": {"X-Entity-Ref-ID": "123456789"},
-    # }
-
-    # Send email notification
-    # email = resend.Emails.send(params)
-    # print(email)
-
-    # Print the unreplaced categories
-    print("Unreplaced categories:", unreplaced_categories)
+    print("Unreplaced categories:")
+    for category in unreplaced_categories:
+        print(category)
 else:
     print("All categories were replaced successfully.")
-
-# Debugging statements
-# print("Unreplaced categories:", unreplaced_categories)
-# print("Email content:", email_content)
-# print("Email parameters:", params)
