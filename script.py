@@ -41,7 +41,7 @@ if unreplaced_categories:
 
     # Prepare email parameters
     params = {
-        "from": "onboarding@resend.dev",
+        "from": "resend@a89.gr",
         "to": ["ar.foulidis@gmail.com"],
         "subject": "Unreplaced Categories in XML",
         "html": email_content,
