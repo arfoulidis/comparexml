@@ -39,12 +39,6 @@ if unreplaced_categories:
     email_content += "<br>".join(unreplaced_categories)
     email_content += "</p>"
 
-    # Prepare email attachment
-    attachment_path = os.path.join(os.path.dirname(__file__), "../resources/invoice.pdf")
-    with open(attachment_path, "rb") as f:
-        attachment_data = f.read()
-    attachment = {"filename": "invoice.pdf", "content": list(attachment_data)}
-
     # Prepare email parameters
     params = {
         "from": "onboarding@resend.dev",
@@ -52,7 +46,6 @@ if unreplaced_categories:
         "subject": "Unreplaced Categories in XML",
         "html": email_content,
         "headers": {"X-Entity-Ref-ID": "123456789"},
-        "attachments": [attachment],
     }
 
     # Send email notification
