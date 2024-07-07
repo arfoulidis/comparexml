@@ -26,7 +26,7 @@ unreplaced_categories = []
 
 # Iterate through the product categories
 for product in root.findall(".//product_category"):
-    category = product.text
+    category = product.text.strip()  # Remove leading/trailing whitespace
     if category in replacements:
         product.text = replacements[category]
     else:
