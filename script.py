@@ -25,7 +25,7 @@ root = ET.fromstring(xml_data)
 unreplaced_categories = []
 
 # Iterate through the product categories
-for product in root.findall(".//product_category"):
+for product in root.findall(".//product/name"):
     category = product.text.strip()  # Remove leading/trailing whitespace
     if category in replacements:
         product.text = replacements[category]
