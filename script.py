@@ -34,27 +34,31 @@ for product in root.findall(".//product_category"):
 
 # Check if any categories were not replaced
 if unreplaced_categories:
+    # Comment out the email sending part
     # Prepare email content
-    email_content = "<strong>These categories have not been replaced:</strong> <br> <p>"
-    email_content += "<br>".join(unreplaced_categories)
-    email_content += "</p>"
+    # email_content = "<strong>These categories have not been replaced:</strong> <br> <p>"
+    # email_content += "<br>".join(unreplaced_categories)
+    # email_content += "</p>"
 
     # Prepare email parameters
-    params = {
-        "from": "resend@resendcom.a89.gr",
-        "to": ["ar.foulidis@gmail.com"],
-        "subject": "Unreplaced Categories in XML",
-        "html": email_content,
-        "headers": {"X-Entity-Ref-ID": "123456789"},
-    }
+    # params = {
+    #     "from": "resend@resendcom.a89.gr",
+    #     "to": ["ar.foulidis@gmail.com"],
+    #     "subject": "Unreplaced Categories in XML",
+    #     "html": email_content,
+    #     "headers": {"X-Entity-Ref-ID": "123456789"},
+    # }
 
     # Send email notification
-    email = resend.Emails.send(params)
-    print(email)
+    # email = resend.Emails.send(params)
+    # print(email)
+
+    # Print the unreplaced categories
+    print("Unreplaced categories:", unreplaced_categories)
 else:
     print("All categories were replaced successfully.")
 
 # Debugging statements
-print("Unreplaced categories:", unreplaced_categories)
-print("Email content:", email_content)
-print("Email parameters:", params)
+# print("Unreplaced categories:", unreplaced_categories)
+# print("Email content:", email_content)
+# print("Email parameters:", params)
