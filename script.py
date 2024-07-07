@@ -53,3 +53,8 @@ if unreplaced_categories:
     print(email)
 else:
     print("All categories were replaced successfully.")
+
+# Debugging statements
+print("Unreplaced categories:", unreplaced_categories)
+print("Email content:", email_content)
+print("Email parameters:", params)
