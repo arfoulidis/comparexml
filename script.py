@@ -25,12 +25,13 @@ root = ET.fromstring(xml_data)
 unreplaced_categories = []
 
 # Iterate through the product categories
-for product in root.findall(".//product/name"):
-    category = product.text.strip()  # Remove leading/trailing whitespace
-    if category in replacements:
-        product.text = replacements[category]
+for category in root.findall(".//category/text()"):
+    category_name = category.strip()  # Remove leading/trailing whitespace
+    if category_name in replacements:
+        # Replace the category name with the corresponding replacement
+        category.getparent().text = replacements[category_name]
     else:
-        unreplaced_categories.append(category)
+        unreplaced_categories.append(category_name)
 
 # Check if any categories were not replaced
 if unreplaced_categories:
