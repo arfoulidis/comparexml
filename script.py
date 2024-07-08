@@ -1,6 +1,7 @@
 import requests
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
+import codecs
 
 # Download the XML file
 url = "https://novalisvita.gr/export/export.xml"
@@ -55,7 +56,8 @@ def write_xml_with_cdata(elem, file, encoding="us-ascii", xml_declaration=None, 
     if xml_declaration:
         file.write(f'<?xml version="1.0" encoding="{encoding}"?>\n'.encode(encoding))
     
-    reparsed.writexml(file, addindent="  ", newl="\n", encoding=encoding)
+    with codecs.getwriter(encoding)(file) as writer:
+        reparsed.writexml(writer, addindent="  ", newl="\n", encoding=encoding)
 
 # Save the modified XML file
 with open("modified_export.xml", "wb") as file:
