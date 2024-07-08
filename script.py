@@ -70,12 +70,13 @@ tree.write("modified_export.xml", encoding="utf-8", xml_declaration=True, pretty
 
 # Prepare email content
 if unchanged_lines:
-    email_content = "<h2>Unique lines that were not changed and removed:</h2><ul>"
+    email_content = 
+    "<li>Κατηγορίες που δεν έχουν καταχωρηθεί στο αρχείο replacements:</li>"
     for text, id in unchanged_lines.items():
         email_content += f"<li>ID: {id}, Text: '{text}'</li>"
     email_content += "</ul>"
 else:
-    email_content = "<p>All lines were either modified or removed.</p>"
+    email_content = "<p>Κατηγορίες που δεν έχουν καταχωρηθεί</p>"
 
 # Read API key
 api_key = read_api_key("resend_api_key.txt")
