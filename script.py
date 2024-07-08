@@ -68,35 +68,35 @@ for product_category in root.xpath("//product_category"):
 # Save the modified XML file
 tree.write("modified_export.xml", encoding="utf-8", xml_declaration=True, pretty_print=True)
 
-# Prepare email content
+# Send email only if there are unchanged lines
 if unchanged_lines:
-    email_content = "<strong>Κατηγορίες που δεν έχουν καταχωρηθεί στο αρχείο replacements:</strong>"
+    # Prepare email content
+    email_content = "<strong>Κατηγορίες που δεν έχουν καταχωρηθεί στο αρχείο replacements:</strong><ul>"
     for text, id in unchanged_lines.items():
         email_content += f"<li>ID: {id}, Text: '{text}'</li>"
     email_content += "</ul>"
+
+    # Read API key
+    api_key = read_api_key("resend_api_key.txt")
+
+    # Initialize Resend
+    resend.api_key = api_key
+
+    # Prepare email parameters
+    params = {
+        "from": "resend@resendcom.a89.gr",
+        "to": ["ar.foulidis@gmail.com"],
+        "subject": "Κατηγορίες XML novalisvita",
+        "html": email_content,
+    }
+
+    # Send email notification
+    try:
+        email = resend.Emails.send(params)
+        print("Email sent successfully. ID:", email["id"])
+    except Exception as e:
+        print("Failed to send email:", str(e))
 else:
-    email_content = "<p>Κατηγορίες που δεν έχουν καταχωρηθεί</p>"
-
-# Read API key
-api_key = read_api_key("resend_api_key.txt")
-
-# Initialize Resend
-resend.api_key = api_key
-
-# Prepare email parameters
-params = {
-    "from": "resend@resendcom.a89.gr",
-    "to": ["ar.foulidis@gmail.com"],
-    "subject": "Unreplaced Categories in XML",
-    "html": email_content,
-    "headers": {"X-Entity-Ref-ID": "123456789"},
-}
-
-# Send email notification
-try:
-    email = resend.Emails.send(params)
-    print("Email sent successfully. ID:", email["id"])
-except Exception as e:
-    print("Failed to send email:", str(e))
+    print("All categories were replaced. No email sent.")
 
 print("Script execution completed. Modified XML saved as 'modified_export.xml'.")
