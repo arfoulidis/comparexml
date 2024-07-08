@@ -1,7 +1,6 @@
 import requests
-import xml.etree.ElementTree as ET
+from lxml import etree
 from collections import OrderedDict
-import codecs
 
 # Download the XML file
 url = "https://novalisvita.gr/export/export.xml"
@@ -10,8 +9,8 @@ with open("export.xml", "wb") as file:
     file.write(response.content)
 
 # Parse the XML file
-parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-tree = ET.parse("export.xml", parser=parser)
+parser = etree.XMLParser(remove_blank_text=True)
+tree = etree.parse("export.xml", parser)
 root = tree.getroot()
 
 # Define the replacements
@@ -23,50 +22,37 @@ replacements = {
 # Function to apply replacements
 def apply_replacements(text):
     for old, new in replacements.items():
-        text = text.replace(old, new)
+        if old in text:
+            print(f"Replacing '{old}' with '{new}'")
+            text = text.replace(old, new)
     return text
 
 # OrderedDict to store unique unchanged lines
 unchanged_lines = OrderedDict()
 
 # Process product categories
-for product_category in root.findall(".//product_category"):
-    for category in product_category.findall("category"):
+for product_category in root.xpath("//product_category"):
+    for category in product_category.xpath("category"):
         # Get the text content, including CDATA
-        original_text = ''.join(category.itertext())
+        original_text = category.text if category.text else ""
+        print(f"Original text: {original_text}")
+        
         modified_text = apply_replacements(original_text)
+        print(f"Modified text: {modified_text}")
         
         if original_text != modified_text:
             # Update the category text
-            category.text = modified_text
-            # Remove any existing children (like CDATA sections)
-            category.clear()
+            category.text = etree.CDATA(modified_text)
         else:
             unchanged_lines[original_text] = category.get('id')
 
-# Custom function to write XML and preserve CDATA
-def write_xml_with_cdata(elem, file, encoding="us-ascii", xml_declaration=None, default_namespace=None,
-                         method="xml", short_empty_elements=True):
-    from xml.etree import ElementTree as ET
-    from xml.dom import minidom
-    
-    rough_string = ET.tostring(elem, encoding, method=method)
-    reparsed = minidom.parseString(rough_string)
-    
-    if xml_declaration:
-        file.write(f'<?xml version="1.0" encoding="{encoding}"?>\n'.encode(encoding))
-    
-    with codecs.getwriter(encoding)(file) as writer:
-        reparsed.writexml(writer, addindent="  ", newl="\n", encoding=encoding)
-
 # Save the modified XML file
-with open("modified_export.xml", "wb") as file:
-    write_xml_with_cdata(root, file, encoding="utf-8", xml_declaration=True)
+tree.write("modified_export.xml", encoding="utf-8", xml_declaration=True, pretty_print=True)
 
 # Print unique unchanged lines
 if unchanged_lines:
-    print("Unique lines that were not changed:")
+    print("\nUnique lines that were not changed:")
     for text, id in unchanged_lines.items():
         print(f"ID: {id}, Text: {text}")
 else:
-    print("All lines were modified.")
+    print("\nAll lines were modified.")
