@@ -42,26 +42,40 @@ unchanged_lines = OrderedDict()
 
 # Process product categories
 for product_category in root.xpath("//product_category"):
+    replacements_made = False
+    categories_to_remove = []
+    
     for category in product_category.xpath("category"):
         original_text = category.text if category.text else ""
         modified_text = apply_replacements(original_text)
         
         if original_text != modified_text:
             category.text = etree.CDATA(modified_text)
+            replacements_made = True
         else:
             unchanged_lines[original_text] = category.get('id')
+            categories_to_remove.append(category)
+    
+    if not replacements_made:
+        # Remove all categories if no replacements were made
+        for category in product_category:
+            product_category.remove(category)
+    else:
+        # Remove only unchanged categories
+        for category in categories_to_remove:
+            product_category.remove(category)
 
 # Save the modified XML file
 tree.write("modified_export.xml", encoding="utf-8", xml_declaration=True, pretty_print=True)
 
 # Prepare email content
 if unchanged_lines:
-    email_content = "<h2>Unique lines that were not changed:</h2><ul>"
+    email_content = "<h2>Unique lines that were not changed and removed:</h2><ul>"
     for text, id in unchanged_lines.items():
         email_content += f"<li>ID: {id}, Text: '{text}'</li>"
     email_content += "</ul>"
 else:
-    email_content = "<p>All lines were modified.</p>"
+    email_content = "<p>All lines were either modified or removed.</p>"
 
 # Read API key
 api_key = read_api_key("resend_api_key.txt")
