@@ -30,10 +30,14 @@ unchanged_lines = OrderedDict()
 # Process product categories
 for product_category in root.findall(".//product_category"):
     for category in product_category.findall("category"):
-        original_text = category.text
+        # Get the text content, including CDATA
+        original_text = (category.text or '') + ''.join(category.itertext())
         modified_text = apply_replacements(original_text)
         
-        if original_text == modified_text:
+        if original_text != modified_text:
+            # Update the category text, preserving CDATA
+            category.text = ET.CDATA(modified_text)
+        else:
             unchanged_lines[original_text] = category.get('id')
 
 # Save the modified XML file
