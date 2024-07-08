@@ -70,8 +70,7 @@ tree.write("modified_export.xml", encoding="utf-8", xml_declaration=True, pretty
 
 # Prepare email content
 if unchanged_lines:
-    email_content = 
-    "<strong>Κατηγορίες που δεν έχουν καταχωρηθεί στο αρχείο replacements:</strong>"
+    email_content = "<strong>Κατηγορίες που δεν έχουν καταχωρηθεί στο αρχείο replacements:</strong>"
     for text, id in unchanged_lines.items():
         email_content += f"<li>ID: {id}, Text: '{text}'</li>"
     email_content += "</ul>"
