@@ -3,6 +3,7 @@ from lxml import etree
 import json
 from collections import OrderedDict
 import resend
+import os
 
 # Function to read replacements from file
 def read_replacements(filename):
@@ -27,8 +28,9 @@ parser = etree.XMLParser(remove_blank_text=True, recover=True, encoding='utf-8')
 tree = etree.parse("export.xml", parser)
 root = tree.getroot()
 
-# Read replacements from file
-replacements = read_replacements("replacements.txt")
+# Read replacements from the specified location
+replacements_file = "/home/pharmacydev/webapps/novalisvitaxml/replacements.txt"
+replacements = read_replacements(replacements_file)
 
 # Function to apply replacements
 def apply_replacements(text):
