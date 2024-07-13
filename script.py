@@ -86,7 +86,7 @@ if unchanged_lines:
 
     # Prepare email parameters
     params = {
-        "from": "resend@resendcom.a89.gr",
+        "from": "resend@resendcom2.a89.gr",
         "to": ["ar.foulidis@gmail.com"],
         "subject": "Κατηγορίες XML novalisvita",
         "html": email_content,
