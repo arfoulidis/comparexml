@@ -13,7 +13,7 @@ def read_replacements(filename):
             line = line.strip()
             if line and not line.startswith('#'):
                 old, new = line.split(': ', 1)
-                replacements[old.strip('"')] = new.strip('"')
+                replacements[old] = new
     return replacements
 
 # Function to read API key from file
@@ -39,7 +39,7 @@ replacements = read_replacements(replacements_file)
 # Function to apply replacements
 def apply_replacements(text):
     for old, new in replacements.items():
-        text = text.replace(old, new)
+        text = text.replace(old, new.strip('"'))
     return text.rstrip(',')
 
 # OrderedDict to store unique unchanged lines
