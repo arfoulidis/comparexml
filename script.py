@@ -40,7 +40,7 @@ replacements = read_replacements(replacements_file)
 def apply_replacements(text):
     for old, new in replacements.items():
         text = text.replace(old, new)
-    return text
+    return text.strip('"')
 
 # OrderedDict to store unique unchanged lines
 unchanged_lines = OrderedDict()
@@ -55,20 +55,20 @@ for product_category in root.xpath("//product_category"):
         modified_text = apply_replacements(original_text)
         
         if original_text != modified_text:
-            category.text = etree.CDATA(modified_text.strip('"'))
+            category.text = etree.CDATA(modified_text)
             replacements_made = True
         else:
             unchanged_lines[original_text] = category.get('id')
             categories_to_remove.append(category)
     
-    if not replacements_made:
-        # Remove all categories if no replacements were made
-        for category in product_category:
-            product_category.remove(category)
-    else:
+    if categories_to_remove:
         # Remove only unchanged categories
         for category in categories_to_remove:
             product_category.remove(category)
+    
+    if not product_category.xpath("category"):
+        # Remove the entire product_category if it's empty
+        root.remove(product_category)
 
 # Save the modified XML file
 tree.write("modified_export.xml", encoding="utf-8", xml_declaration=True, pretty_print=True)
