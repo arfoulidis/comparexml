@@ -1,6 +1,7 @@
 import requests
 from lxml import etree
 import os
+import resend
 
 # Function to read replacements from file
 def read_replacements(filename):
