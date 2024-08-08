@@ -7,14 +7,10 @@ import os
 
 # Function to read replacements from file
 def read_replacements(filename):
-    replacements = {}
     with open(filename, 'r', encoding='utf-8') as file:
-        for line in file:
-            line = line.strip()
-            if line and not line.startswith('#'):
-                old, new = line.split(': ', 1)
-                replacements[old] = new
-    return replacements
+        content = file.read()
+        content = "{" + content.strip().rstrip(',') + "}"
+        return json.loads(content)
 
 # Function to read API key from file
 def read_api_key(filename):
@@ -39,7 +35,8 @@ replacements = read_replacements(replacements_file)
 # Function to apply replacements
 def apply_replacements(text):
     for old, new in replacements.items():
-        text = text.replace(old, new)
+        if old in text:
+            text = text.replace(old, new)
     return text
 
 # OrderedDict to store unique unchanged lines
