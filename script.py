@@ -13,8 +13,6 @@ def read_replacements(filename):
             line = line.strip()
             if line and not line.startswith('#'):
                 old, new = line.split(': ', 1)
-                old = old.strip('"')
-                new = new.strip('"')
                 replacements[old] = new
     return replacements
 
@@ -42,7 +40,7 @@ replacements = read_replacements(replacements_file)
 def apply_replacements(text):
     for old, new in replacements.items():
         text = text.replace(old, new)
-    return text.rstrip(',')
+    return text
 
 # OrderedDict to store unique unchanged lines
 unchanged_lines = OrderedDict()
@@ -57,7 +55,7 @@ for product_category in root.xpath("//product_category"):
         modified_text = apply_replacements(original_text)
         
         if original_text != modified_text:
-            category.text = etree.CDATA(modified_text)
+            category.text = etree.CDATA(modified_text.strip('"'))
             replacements_made = True
         else:
             unchanged_lines[original_text] = category.get('id')
