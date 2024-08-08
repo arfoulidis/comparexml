@@ -1,17 +1,16 @@
 import requests
 from lxml import etree
-import json
-from collections import OrderedDict
-import resend
 import os
 
 # Function to read replacements from file
 def read_replacements(filename):
+    replacements = {}
     with open(filename, 'r', encoding='utf-8') as file:
-        content = file.read()
-        # Convert the content to a valid JSON format
-        content = "{" + content.strip().replace('"', '').replace('=>', '":') + "}"
-        return json.loads(content, object_pairs_hook=OrderedDict)
+        for line in file:
+            if ':' in line:
+                key, value = line.strip().split(':', 1)
+                replacements[key.strip('"')] = value.strip('"')
+    return replacements
 
 # Function to read API key from file
 def read_api_key(filename):
@@ -41,7 +40,7 @@ def apply_replacements(text):
     return text
 
 # OrderedDict to store unique unchanged lines
-unchanged_lines = OrderedDict()
+unchanged_lines = {}
 
 # Process product categories
 for product_category in root.xpath("//product_category"):
