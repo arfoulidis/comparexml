@@ -32,13 +32,11 @@ root = tree.getroot()
 replacements_file = "/home/pharmacydev/webapps/novalisvitaxml/replacements.txt"
 replacements = read_replacements(replacements_file)
 
-# Function to apply replacements with brackets
+# Function to apply replacements
 def apply_replacements(text):
     for old, new in replacements.items():
-        # Escape brackets in the old string for regex matching
-        old_escaped = old.replace("[", "\[").replace("]", "\]")
-        if "[" + old_escaped + "]" in text:
-            text = text.replace("[" + old_escaped + "]", "[" + new + "]")
+        if old in text:
+            text = text.replace(old, new)
     return text
 
 # OrderedDict to store unique unchanged lines
@@ -51,10 +49,11 @@ for product_category in root.xpath("//product_category"):
     
     for category in product_category.xpath("category"):
         original_text = category.text if category.text else ""
-        modified_text = apply_replacements(original_text)
         
-        if original_text != modified_text:
-            category.text = etree.CDATA(modified_text)
+        # Directly modify the element's text
+        category.text = apply_replacements(original_text)
+        
+        if original_text != category.text:
             replacements_made = True
         else:
             unchanged_lines[original_text] = category.get('id')
