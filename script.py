@@ -1,16 +1,17 @@
 import requests
 from lxml import etree
-import json
-from collections import OrderedDict
-import resend
 import os
+import resend
 
 # Function to read replacements from file
 def read_replacements(filename):
+    replacements = {}
     with open(filename, 'r', encoding='utf-8') as file:
-        content = file.read()
-        content = "{" + content.strip().rstrip(',') + "}"
-        return json.loads(content)
+        for line in file:
+            if ':' in line:
+                key, value = line.strip().split(':', 1)
+                replacements[key.strip('"')] = value.strip('"')
+    return replacements
 
 # Function to read API key from file
 def read_api_key(filename):
@@ -31,17 +32,18 @@ root = tree.getroot()
 # Read replacements from the specified location
 replacements_file = "/home/pharmacydev/webapps/novalisvitaxml/replacements.txt"
 replacements = read_replacements(replacements_file)
+print("Replacements loaded:", replacements)
 
 # Function to apply replacements
 def apply_replacements(text):
     for old, new in replacements.items():
         if f"[{old}]" in text:
+            print(f"Replacing [{old}] with [{new}]")
             text = text.replace(f"[{old}]", f"[{new}]")
     return text
 
-
 # OrderedDict to store unique unchanged lines
-unchanged_lines = OrderedDict()
+unchanged_lines = {}
 
 # Process product categories
 for product_category in root.xpath("//product_category"):
@@ -50,12 +52,12 @@ for product_category in root.xpath("//product_category"):
     
     for category in product_category.xpath("category"):
         original_text = category.text if category.text else ""
+        modified_text = apply_replacements(original_text)
         
-        # Directly modify the element's text
-        category.text = apply_replacements(original_text)
-        
-        if original_text != category.text:
+        if original_text != modified_text:
+            category.text = etree.CDATA(modified_text)
             replacements_made = True
+            print(f"Replaced '{original_text}' with '{modified_text}'")
         else:
             unchanged_lines[original_text] = category.get('id')
             categories_to_remove.append(category)
