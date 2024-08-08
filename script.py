@@ -48,8 +48,9 @@ for product_category in root.xpath("//product_category"):
     categories_to_remove = []
     
     for category in product_category.xpath("category"):
-        original_text = category.text if category.text else ""
+        original_text = f"<{category.text}>" if category.text else ""
         modified_text = apply_replacements(original_text)
+        modified_text = modified_text[1:-1]  # Remove <>
         
         if original_text != modified_text:
             category.text = etree.CDATA(modified_text)
