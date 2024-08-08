@@ -32,11 +32,13 @@ root = tree.getroot()
 # Read replacements from the specified location
 replacements_file = "/home/pharmacydev/webapps/novalisvitaxml/replacements.txt"
 replacements = read_replacements(replacements_file)
+print("Replacements loaded:", replacements)
 
 # Function to apply replacements
 def apply_replacements(text):
     for old, new in replacements.items():
         if f"[{old}]" in text:
+            print(f"Replacing [{old}] with [{new}]")
             text = text.replace(f"[{old}]", f"[{new}]")
     return text
 
@@ -55,6 +57,7 @@ for product_category in root.xpath("//product_category"):
         if original_text != modified_text:
             category.text = etree.CDATA(modified_text)
             replacements_made = True
+            print(f"Replaced '{original_text}' with '{modified_text}'")
         else:
             unchanged_lines[original_text] = category.get('id')
             categories_to_remove.append(category)
