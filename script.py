@@ -35,9 +35,10 @@ replacements = read_replacements(replacements_file)
 # Function to apply replacements
 def apply_replacements(text):
     for old, new in replacements.items():
-        if old in text:
-            text = text.replace(old, new)
+        if f"[{old}]" in text:
+            text = text.replace(f"[{old}]", f"[{new}]")
     return text
+
 
 # OrderedDict to store unique unchanged lines
 unchanged_lines = OrderedDict()
