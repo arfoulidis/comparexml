@@ -13,7 +13,7 @@ def read_replacements(filename):
             line = line.strip()
             if line and not line.startswith('#'):
                 old, new = line.split(': ', 1)
-                replacements[old] = new
+                replacements[old.strip('"')] = new.strip('"')
     return replacements
 
 # Function to read API key from file
@@ -40,7 +40,7 @@ replacements = read_replacements(replacements_file)
 def apply_replacements(text):
     for old, new in replacements.items():
         text = text.replace(old, new)
-    return text.strip('"')
+    return text.rstrip(',')
 
 # OrderedDict to store unique unchanged lines
 unchanged_lines = OrderedDict()
@@ -61,14 +61,14 @@ for product_category in root.xpath("//product_category"):
             unchanged_lines[original_text] = category.get('id')
             categories_to_remove.append(category)
     
-    if categories_to_remove:
+    if not replacements_made:
+        # Remove all categories if no replacements were made
+        for category in product_category:
+            product_category.remove(category)
+    else:
         # Remove only unchanged categories
         for category in categories_to_remove:
             product_category.remove(category)
-    
-    if not product_category.xpath("category"):
-        # Remove the entire product_category if it's empty
-        root.remove(product_category)
 
 # Save the modified XML file
 tree.write("modified_export.xml", encoding="utf-8", xml_declaration=True, pretty_print=True)
