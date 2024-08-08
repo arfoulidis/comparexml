@@ -32,11 +32,13 @@ root = tree.getroot()
 replacements_file = "/home/pharmacydev/webapps/novalisvitaxml/replacements.txt"
 replacements = read_replacements(replacements_file)
 
-# Function to apply replacements
+# Function to apply replacements with brackets
 def apply_replacements(text):
     for old, new in replacements.items():
-        if old in text:
-            text = text.replace(old, new)
+        # Escape brackets in the old string for regex matching
+        old_escaped = old.replace("[", "\[").replace("]", "\]")
+        if "[" + old_escaped + "]" in text:
+            text = text.replace("[" + old_escaped + "]", "[" + new + "]")
     return text
 
 # OrderedDict to store unique unchanged lines
