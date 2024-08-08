@@ -35,8 +35,8 @@ replacements = read_replacements(replacements_file)
 # Function to apply replacements
 def apply_replacements(text):
     for old, new in replacements.items():
-        if old in text:
-            text = text.replace(old, new)
+        if f"[{old}]" in text:
+            text = text.replace(f"[{old}]", f"[{new}]")
     return text
 
 # OrderedDict to store unique unchanged lines
@@ -48,9 +48,8 @@ for product_category in root.xpath("//product_category"):
     categories_to_remove = []
     
     for category in product_category.xpath("category"):
-        original_text = f"<{category.text}>" if category.text else ""
+        original_text = category.text if category.text else ""
         modified_text = apply_replacements(original_text)
-        modified_text = modified_text[1:-1]  # Remove <>
         
         if original_text != modified_text:
             category.text = etree.CDATA(modified_text)
