@@ -9,8 +9,8 @@ import os
 def read_replacements(filename):
     with open(filename, 'r', encoding='utf-8') as file:
         content = file.read()
-        content = "{" + content.strip().rstrip(',') + "}"
-        return json.loads(content)
+        replacements = json.loads(content)
+        return {k.strip('[]'): v.strip('[]') for k, v in replacements.items()}
 
 # Function to read API key from file
 def read_api_key(filename):
