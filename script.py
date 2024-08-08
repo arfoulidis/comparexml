@@ -42,7 +42,7 @@ replacements = read_replacements(replacements_file)
 def apply_replacements(text):
     for old, new in replacements.items():
         text = text.replace(old, new)
-    return text.rstrip(',')  # Remove the trailing comma
+    return text.rstrip(',')
 
 # OrderedDict to store unique unchanged lines
 unchanged_lines = OrderedDict()
