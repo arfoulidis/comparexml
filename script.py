@@ -4,6 +4,7 @@ import json
 from collections import OrderedDict
 import resend
 import os
+import re
 
 # Function to read replacements from file
 def read_replacements(filename):
@@ -34,9 +35,14 @@ replacements = read_replacements(replacements_file)
 
 # Function to apply replacements
 def apply_replacements(text):
+    print("--- text:", text)
     for old, new in replacements.items():
-        if old in text:
-            text = text.replace(old, new)
+        if old == text:
+            res = text.replace(old, new)
+            print("> old: ", old)
+            print("> new: ", new)
+            print("> result: ", res)
+            text = res
     return text
 
 # OrderedDict to store unique unchanged lines
